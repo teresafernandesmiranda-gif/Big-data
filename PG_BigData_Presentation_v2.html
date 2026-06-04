@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P&G Big Data Strategy — BDA4B Nova IMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0B1F3A;
+  --blue:   #1557A0;
+  --mid:    #2A7BDE;
+  --ice:    #C8DFFE;
+  --accent: #F4B942;
+  --green:  #2ECC8B;
+  --red:    #E84040;
+  --glass:  rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.11);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:var(--navy);color:#F5F8FF;font-family:'DM Sans',sans-serif;overflow:hidden;user-select:none}
+
+/* DECK */
+#deck{width:100vw;height:100vh;position:relative;overflow:hidden}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  padding:48px 68px 40px;
+  opacity:0;pointer-events:none;
+  transform:translateX(56px);
+  transition:opacity .4s cubic-bezier(.4,0,.2,1),transform .4s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit{opacity:0;transform:translateX(-56px);transition:opacity .3s ease,transform .3s ease}
+
+/* BACKGROUNDS */
+.bg-title{background:radial-gradient(ellipse 90% 70% at 65% 35%,#1A3A6B 0%,#0B1F3A 70%)}
+.bg-title::before{content:'';position:absolute;inset:0;background:radial-gradient(circle 700px at 88% 18%,rgba(42,123,222,.16) 0%,transparent 65%),radial-gradient(circle 350px at 8%,rgba(244,185,66,.07) 0%,transparent 55%);pointer-events:none}
+.bg-a{background:linear-gradient(135deg,#0D2244 0%,#0B1F3A 100%)}
+.bg-a::before{content:'';position:absolute;top:-90px;right:-90px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(42,123,222,.13) 0%,transparent 70%);pointer-events:none}
+.bg-b{background:#091729}
+.bg-b::before{content:'';position:absolute;bottom:-60px;left:-60px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(21,87,160,.18) 0%,transparent 70%);pointer-events:none}
+.slide::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M60 0v60M0 60h60' stroke='rgba(255,255,255,0.025)' stroke-width='1'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.slide>*{position:relative;z-index:1}
+
+/* TYPOGRAPHY */
+.label{font-family:'DM Mono',monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;opacity:.9}
+h1.hero{font-family:'Syne',sans-serif;font-size:clamp(36px,5vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.02em;color:#fff}
+h1.hero span{color:var(--accent)}
+h2.stitle{font-family:'Syne',sans-serif;font-size:clamp(22px,2.8vw,36px);font-weight:700;line-height:1.1;letter-spacing:-.01em;color:#fff;margin-bottom:20px}
+h2.stitle em{color:var(--accent);font-style:normal}
+h3.sub{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ice);margin-bottom:8px;letter-spacing:.02em}
+p,li{font-size:13.5px;line-height:1.62;color:rgba(245,248,255,.82);font-weight:300}
+strong{color:#fff;font-weight:500}
+.cite{font-family:'DM Mono',monospace;font-size:10px;color:rgba(200,223,254,.48);letter-spacing:.04em}
+
+/* LAYOUT */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1;align-items:start}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;flex:1;align-items:start}
+.flex1{flex:1}
+
+/* CARDS */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:18px 20px;backdrop-filter:blur(6px)}
+.card-y{border-left:3px solid var(--accent);background:rgba(244,185,66,.05)}
+.card-b{border-left:3px solid var(--mid);background:rgba(42,123,222,.07)}
+.card-g{border-left:3px solid var(--green);background:rgba(46,204,139,.06)}
+.card-r{border-left:3px solid var(--red);background:rgba(232,64,64,.06)}
+
+/* STAT */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.stat-box{background:var(--glass);border:1px solid var(--border);border-radius:10px;padding:16px 14px;text-align:center}
+.stat-num{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--accent);line-height:1;display:block;margin-bottom:5px}
+.stat-lbl{font-size:11px;color:var(--ice);line-height:1.4}
+
+/* BULLET LIST */
+ul.dl{list-style:none;display:flex;flex-direction:column;gap:9px}
+ul.dl li{display:flex;gap:11px;align-items:flex-start}
+ul.dl li::before{content:'→';color:var(--accent);font-family:'DM Mono',monospace;font-size:12px;flex-shrink:0;margin-top:1px}
+
+/* V TABLE */
+.vtable{display:flex;flex-direction:column;gap:9px;flex:1}
+.vrow{display:grid;grid-template-columns:80px 1fr 1fr;border-radius:9px;overflow:hidden}
+.vlabel{background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent);padding:13px 0}
+.vtheory{background:rgba(21,87,160,.22);padding:11px 14px;border-left:1px solid var(--border)}
+.vpg{background:rgba(42,123,222,.11);padding:11px 14px;border-left:1px solid var(--border)}
+.vcol{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:3px}
+
+/* TOOL GRID */
+.tgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;flex:1}
+.titem{display:flex;gap:11px;align-items:flex-start;background:var(--glass);border:1px solid var(--border);border-radius:9px;padding:13px 14px}
+.ticon{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;background:rgba(42,123,222,.18)}
+.tname{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;margin-bottom:2px}
+
+/* BENEFIT TABLE */
+.btable{width:100%;border-collapse:collapse;flex:1}
+.btable th{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);text-align:left;padding:9px 12px;background:rgba(21,87,160,.28);border-bottom:1px solid var(--border)}
+.btable td{padding:9px 12px;font-size:12.5px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.45}
+.btable tr:last-child td{border-bottom:none}
+.btable tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.num{color:var(--green);font-family:'Syne',sans-serif;font-weight:700;font-size:14px}
+.hl td{background:rgba(244,185,66,.05)!important}
+
+/* CHALLENGE */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1}
+.citem{background:var(--glass);border:1px solid var(--border);border-radius:11px;padding:14px 16px}
+.cico{font-size:20px;margin-bottom:6px;display:block}
+.ctitle{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--red);margin-bottom:5px}
+
+/* REC */
+.rlist{display:flex;flex-direction:column;gap:9px;flex:1}
+.ritem{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;background:var(--glass);border:1px solid var(--border);border-radius:9px;padding:12px 14px}
+.rnum{width:34px;height:34px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--accent);flex-shrink:0}
+.rtitle{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--ice);margin-bottom:3px}
+
+/* QUOTE */
+.qblock{background:rgba(244,185,66,.06);border-left:3px solid var(--accent);border-radius:0 9px 9px 0;padding:12px 18px;margin:10px 0}
+.qblock p{font-size:13px;font-style:italic;color:rgba(245,248,255,.85);line-height:1.55}
+.qsrc{font-family:'DM Mono',monospace;font-size:10px;color:rgba(200,223,254,.42);margin-top:5px;display:block}
+
+/* DIVIDER */
+.div{height:2px;background:linear-gradient(90deg,var(--mid) 0%,transparent 100%);border-radius:2px;margin:12px 0;opacity:.45}
+
+/* SLIDE HEADER */
+.shead{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-shrink:0}
+.shead .label{margin-bottom:0}
+.snum{font-family:'DM Mono',monospace;font-size:10.5px;color:rgba(200,223,254,.3);letter-spacing:.1em}
+
+/* TITLE */
+.hero-sub{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;color:rgba(200,223,254,.65);margin-top:12px;max-width:520px;line-height:1.6}
+.meta-pill{background:var(--glass);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--ice);letter-spacing:.07em;display:inline-block}
+.big-circle{position:absolute;right:68px;top:50%;transform:translateY(-50%);width:260px;height:260px;border-radius:50%;border:1px solid var(--border);background:radial-gradient(circle at 40% 40%,rgba(42,123,222,.22) 0%,rgba(11,31,58,.85) 70%);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px}
+.big-circle span:first-child{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;color:var(--accent)}
+.big-circle span:last-child{font-family:'DM Mono',monospace;font-size:11px;color:var(--ice);letter-spacing:.1em}
+
+/* AGENDA */
+.alist{display:flex;flex-direction:column;gap:11px;flex:1;justify-content:center}
+.aitem{display:flex;align-items:center;gap:18px;background:var(--glass);border:1px solid var(--border);border-radius:11px;padding:14px 20px}
+.anum{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--accent);opacity:.3;min-width:32px}
+.atext strong{display:block;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:1px}
+.atext span{font-size:12px;color:rgba(200,223,254,.55)}
+.apts{margin-left:auto;background:rgba(244,185,66,.1);border:1px solid rgba(244,185,66,.22);border-radius:100px;padding:3px 11px;font-family:'DM Mono',monospace;font-size:10.5px;color:var(--accent);white-space:nowrap}
+
+/* TEAM */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.team-card{background:var(--glass);border:1px solid var(--border);border-radius:11px;padding:14px 18px;display:flex;align-items:center;gap:14px}
+.team-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--mid));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--accent);flex-shrink:0}
+.team-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.team-id{font-family:'DM Mono',monospace;font-size:10.5px;color:rgba(200,223,254,.5);letter-spacing:.06em}
+
+/* ARCH */
+.arch{display:flex;align-items:stretch;gap:0;margin-bottom:14px}
+.anode{flex:1;background:var(--glass);border:1px solid var(--border);border-radius:11px;padding:14px 12px;text-align:center}
+.anode .ni{font-size:22px;margin-bottom:6px;display:block}
+.anode .nt{font-family:'Syne',sans-serif;font-size:11.5px;font-weight:700;color:var(--accent);margin-bottom:4px}
+.anode p{font-size:11px;color:rgba(200,223,254,.65)}
+.aarrow{font-size:18px;color:rgba(42,123,222,.45);flex-shrink:0;padding:0 5px;display:flex;align-items:center}
+
+/* CONCLUSION */
+.concl{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.concl-card{background:var(--glass);border:1px solid var(--border);border-radius:13px;padding:18px;text-align:center}
+.concl-icon{font-size:26px;margin-bottom:8px;display:block}
+.concl-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--accent);margin-bottom:6px}
+
+/* SPEAKER */
+.spk{display:inline-flex;align-items:center;gap:7px;background:rgba(244,185,66,.09);border:1px solid rgba(244,185,66,.18);border-radius:100px;padding:4px 13px 4px 9px;font-size:11.5px;color:var(--accent);margin-top:16px;flex-shrink:0}
+.spk::before{content:'🎤';font-size:12px}
+
+/* NAV */
+#nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(11,31,58,.88);border:1px solid var(--border);border-radius:100px;padding:7px 18px;backdrop-filter:blur(16px);z-index:100}
+#nav button{background:none;border:none;cursor:pointer;color:rgba(200,223,254,.6);font-size:17px;line-height:1;padding:4px 7px;border-radius:5px;transition:color .2s,background .2s;font-family:'DM Sans',sans-serif}
+#nav button:hover{color:#fff;background:rgba(255,255,255,.08)}
+#nav button:disabled{color:rgba(200,223,254,.18);cursor:default;background:none}
+#sc{font-family:'DM Mono',monospace;font-size:11.5px;color:rgba(200,223,254,.45);letter-spacing:.1em;min-width:48px;text-align:center}
+#timer{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--green);letter-spacing:.06em;padding-left:9px;border-left:1px solid var(--border);cursor:pointer;min-width:46px}
+#timer.warn{color:var(--accent)}
+#timer.over{color:var(--red)}
+#pb{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--mid),var(--accent));transition:width .4s ease;z-index:100;border-radius:0 2px 2px 0}
+</style>
+</head>
+<body>
+<div id="pb"></div>
+<div id="deck">
+
+<!-- ══ SLIDE 1 — TITLE ══ -->
+<div class="slide bg-title active">
+  <div class="big-circle">
+    <span>P&amp;G</span>
+    <span>BIG DATA</span>
+  </div>
+  <div style="margin-top:auto;margin-bottom:auto;max-width:560px">
+    <div class="label">BDA4B · Nova IMS · 2025–2026</div>
+    <h1 class="hero">Big Data Strategy<br>of <span>Procter &amp; Gamble</span></h1>
+    <p class="hero-sub">Turning Big Data into Big Value<br><em style="color:rgba(200,223,254,.45);font-style:normal">IBS Center for Management Research, 2017</em></p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">FN</div>
+        <div><div class="team-name">Francisco Neves</div><div class="team-id">20251104</div></div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">RQ</div>
+        <div><div class="team-name">Rafael Quinteiro da Silva</div><div class="team-id">20251609</div></div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">SB</div>
+        <div><div class="team-name">Salomé Barreira</div><div class="team-id">20251020</div></div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">TM</div>
+        <div><div class="team-name">Teresa Miranda</div><div class="team-id">20251856</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 2 — AGENDA ══ -->
+<div class="slide bg-a">
+  <div class="shead"><div class="label">Agenda</div><div class="snum">02 / 10</div></div>
+  <h2 class="stitle">What We'll <em>Cover</em></h2>
+  <div class="alist">
+    <div class="aitem">
+      <div class="anum">01</div>
+      <div class="atext"><strong>Organization Overview &amp; Data Challenges</strong><span>Who is P&amp;G and what Big Data problems did it face?</span></div>
+    </div>
+    <div class="aitem">
+      <div class="anum">02</div>
+      <div class="atext"><strong>Q1 — Big Data Strategy</strong><span>How P&amp;G collected, processed, and used data in real time</span></div>
+      
+    </div>
+    <div class="aitem">
+      <div class="anum">03</div>
+      <div class="atext"><strong>Q2 — Benefits of Big Data</strong><span>Quantified outcomes across all business functions</span></div>
+      
+    </div>
+    <div class="aitem">
+      <div class="anum">04</div>
+      <div class="atext"><strong>Q3 — Challenges &amp; Recommendations</strong><span>Going forward: risks, GDPR, AI Act, data governance</span></div>
+      
+    </div>
+    <div class="aitem">
+      <div class="anum">05</div>
+      <div class="atext"><strong>Conclusion</strong><span>Key takeaways</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 3 — OVERVIEW + CHALLENGES ══ -->
+<div class="slide bg-b">
+  <div class="shead"><div class="label">Section 1 · Overview &amp; Data Challenges</div><div class="snum">03 / 10</div></div>
+  <h2 class="stitle">P&amp;G &amp; the <em>Big Data Challenge</em></h2>
+  <div class="stat-grid">
+    <div class="stat-box"><span class="stat-num">300+</span><div class="stat-lbl">Products in 180+ countries</div></div>
+    <div class="stat-box"><span class="stat-num">$65.3B</span><div class="stat-lbl">Net sales FY2016 (peak $83.7B in 2012)</div></div>
+    <div class="stat-box"><span class="stat-num">1992</span><div class="stat-lbl">Analytics first embedded in operations</div></div>
+  </div>
+  <div class="vtable">
+    <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:0;margin-bottom:4px;padding:0 4px">
+      <div></div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);padding:0 14px">Theory</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);padding:0 14px">P&amp;G Reality</div>
+    </div>
+    <div class="vrow">
+      <div class="vlabel">V</div>
+      <div class="vtheory"><p><strong>Volume:</strong> Data too large for existing BI</p></div>
+      <div class="vpg"><p>200 TB raw data in Hadoop; vast structured &amp; unstructured data across R&amp;D, supply chain, CRM <span class="cite">(IBS, 'Big Data at P&amp;G')</span></p></div>
+    </div>
+    <div class="vrow">
+      <div class="vlabel" style="background:rgba(42,123,222,.45)">V</div>
+      <div class="vtheory"><p><strong>Velocity:</strong> Data arriving faster than processable</p></div>
+      <div class="vpg"><p>Need for real-time decisions across all markets simultaneously — "reduce decision time from weeks to minutes" <span class="cite">(IBS, 'Decision Making')</span></p></div>
+    </div>
+    <div class="vrow">
+      <div class="vlabel" style="background:rgba(42,123,222,.3)">V</div>
+      <div class="vtheory"><p><strong>Variety:</strong> Diverse formats BI cannot handle</p></div>
+      <div class="vpg"><p>Social media, POS, IoT, web, virtual reality — "needed to incorporate new data types that traditional analytics could not process" <span class="cite">(IBS, 'Big Data at P&amp;G')</span></p></div>
+    </div>
+  </div>
+  <div class="spk">Francisco Neves</div>
+</div>
+
+<!-- ══ SLIDE 4 — Q1: COLLECTION + PROCESSING ══ -->
+<div class="slide bg-a">
+  <div class="shead"><div class="label">Q1 · Data Collection &amp; Processing</div><div class="snum">04 / 10</div></div>
+  <h2 class="stitle">How P&amp;G <em>Collected &amp; Processed</em> Big Data</h2>
+  <div class="cols2" style="gap:20px;flex:1">
+    <div>
+      <h3 class="sub">6 Data Sources</h3>
+      <div class="tgrid" style="grid-template-columns:1fr 1fr;gap:8px">
+        <div class="titem"><div class="ticon">🛒</div><div><div class="tname">Retail POS</div><p>Transactions, inventory, channel data <span class="cite">(IBS, 'Supply Chain')</span></p></div></div>
+        <div class="titem"><div class="ticon">💬</div><div><div class="tname">Social Media</div><p>Blogs, Twitter — consumer sentiment <span class="cite">(IBS, 'Decision Making')</span></p></div></div>
+        <div class="titem"><div class="ticon">👶</div><div><div class="tname">Consumer Sites</div><p>Pampers.com — life-stage preferences <span class="cite">(IBS, 'Marketing')</span></p></div></div>
+        <div class="titem"><div class="ticon">🏭</div><div><div class="tname">Enterprise Systems</div><p>ERP, SCM, HR data <span class="cite">(IBS, 'Results')</span></p></div></div>
+        <div class="titem"><div class="ticon">📡</div><div><div class="tname">External Sources</div><p>Nielsen, weather, demographics <span class="cite">(IBS, 'Marketing')</span></p></div></div>
+        <div class="titem"><div class="ticon">👁️</div><div><div class="tname">VR &amp; Eye-Tracking</div><p>Consumer behaviour in virtual stores <span class="cite">(IBS, 'Product Dev.')</span></p></div></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="sub">Processing Architecture — Lambda</h3>
+      <div class="arch" style="flex-direction:column;gap:7px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="anode" style="flex:1;background:rgba(42,123,222,.12);border-color:rgba(42,123,222,.35)"><span class="ni">⚡</span><div class="nt">Stream Layer</div><p>Consumer Pulse · E2open Demand Sensing</p></div>
+          <div class="aarrow">→</div>
+          <div class="anode" style="flex:1.2;background:rgba(244,185,66,.07);border-color:rgba(244,185,66,.25)"><span class="ni">📊</span><div class="nt">Serving Layer</div><p>Business Sphere · Decision Cockpit</p></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="anode" style="flex:1;background:rgba(42,123,222,.08)"><span class="ni">🗄️</span><div class="nt">Batch Layer</div><p>Hadoop/Cloudera · Oracle Big Data Appliance</p></div>
+          <div class="aarrow">↗</div>
+          <div style="flex:1.2;display:flex;flex-direction:column;gap:5px">
+            <div class="card" style="padding:8px 12px"><p style="font-size:11.5px"><strong>Hadoop/Cloudera</strong> — from 2014; 200 TB, 300 global users. Data Lake: schema-on-read <span class="cite">(IBS, 'Big Data at P&amp;G')</span></p></div>
+            <div class="card" style="padding:8px 12px"><p style="font-size:11.5px"><strong>Oracle Big Data Appliance</strong> — April 2015; "shortest path to value" (McFadden, GBS) <span class="cite">(IBS, 'Results')</span></p></div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-b" style="padding:10px 14px"><p><strong>Predictive analytics</strong> formed "a vital component of all significant decisions" — BayesiaLab (Bayesian Inference) processed real-time social sentiment <span class="cite">(IBS, 'Big Data at P&amp;G')</span></p></div>
+    </div>
+  </div>
+  <div class="spk">Rafael Quinteiro da Silva</div>
+</div>
+
+<!-- ══ SLIDE 5 — Q1: REAL-TIME TOOLS ══ -->
+<div class="slide bg-b">
+  <div class="shead"><div class="label">Q1 · Real-Time Decision-Making Tools</div><div class="snum">05 / 10</div></div>
+  <h2 class="stitle">Tools That Made Data <em>Actionable</em></h2>
+  <div class="tgrid">
+    <div class="titem" style="border-left:2px solid var(--accent)">
+      <div class="ticon" style="background:rgba(244,185,66,.18)">🌐</div>
+      <div>
+        <div class="tname">Business Sphere</div>
+        <p>32×8 ft screens with real-time heat maps &amp; what-if scenarios. Cisco, SAP, Nielsen, TIBCO Spotfire. Global executives view identical data simultaneously <span class="cite">(IBS, 'Decision Making')</span></p>
+      </div>
+    </div>
+    <div class="titem" style="border-left:2px solid var(--mid)">
+      <div class="ticon">🖥️</div>
+      <div>
+        <div class="tname">Decision Cockpit</div>
+        <p>Personalised dashboards for <strong>50,000+ employees</strong>. KPIs, market intel, alerts on desktop &amp; mobile via cloud computing <span class="cite">(IBS, 'Decision Making')</span></p>
+      </div>
+    </div>
+    <div class="titem" style="border-left:2px solid var(--mid)">
+      <div class="ticon">💡</div>
+      <div>
+        <div class="tname">Consumer Pulse</div>
+        <p>Bayesian Inference on social media in real time. Sentiment routed by brand to managers for <strong>immediate response</strong> <span class="cite">(IBS, 'Decision Making')</span></p>
+      </div>
+    </div>
+    <div class="titem" style="border-left:2px solid var(--green)">
+      <div class="ticon">🔀</div>
+      <div>
+        <div class="tname">Arcadia Data</div>
+        <p>Hadoop-native BI — insights directly from raw Hadoop data. No data movement needed → Data Lakehouse concept <span class="cite">(IBS, 'Big Data at P&amp;G')</span></p>
+      </div>
+    </div>
+    <div class="titem">
+      <div class="ticon">☁️</div>
+      <div>
+        <div class="tname">Teradata Cloud DW</div>
+        <p>Consumer CRM, campaign management, Master Data Management. Integrated Retail Logical Data Model <span class="cite">(IBS, 'Marketing')</span></p>
+      </div>
+    </div>
+    <div class="titem">
+      <div class="ticon">🏗️</div>
+      <div>
+        <div class="tname">Supply Chain Control Towers</div>
+        <p>End-to-end supply visibility. Empty load trips <strong>reduced 15%</strong> by August 2010. Real-time automated freight management <span class="cite">(IBS, 'Supply Chain')</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="qblock" style="margin-top:12px;padding:10px 16px">
+    <p>"By getting the right data to the right decision makers at the right time, we can become increasingly efficient and productive." <span class="qsrc">Bob McDonald, CEO — IBS Case Study, 'Decision Making'</span></p>
+  </div>
+  <div class="spk">Rafael Quinteiro da Silva</div>
+</div>
+
+<!-- ══ SLIDE 6 — Q2: BENEFITS ══ -->
+<div class="slide bg-a">
+  <div class="shead"><div class="label">Q2 · Benefits of Big Data</div><div class="snum">06 / 10</div></div>
+  <h2 class="stitle">What P&amp;G <em>Gained</em> from Big Data</h2>
+  <table class="btable" style="margin-bottom:14px">
+    <thead>
+      <tr>
+        <th style="width:170px">Benefit Area</th>
+        <th>Quantified Outcome</th>
+        <th style="width:175px;text-align:right">Source (IBS)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="hl"><td><strong>Cost Savings</strong></td><td>US$<span class="num">1B+</span> inventory savings (Oracle Big Data); US$<span class="num">1B+</span> manufacturing consolidation by 2008</td><td class="cite" style="text-align:right">'Results' &amp; 'Big Data at P&amp;G'</td></tr>
+      <tr><td><strong>Supply Chain</strong></td><td>Estimation error <span class="num">−30%</span>; safety stock <span class="num">−10%</span>; empty load trips <span class="num">−15%</span> by Aug. 2010</td><td class="cite" style="text-align:right">'Supply Chain'</td></tr>
+      <tr class="hl"><td><strong>Decision Speed</strong></td><td>Decision time: <span class="num">weeks → minutes</span>; marketing-mix analysis: months → <span class="num">~6 weeks</span></td><td class="cite" style="text-align:right">'Decision Making' &amp; 'Marketing'</td></tr>
+      <tr><td><strong>R&amp;D &amp; Innovation</strong></td><td>R&amp;D efficiency <span class="num">+60%</span>; R&amp;D/revenue: <span class="num">4.8% → 3.4%</span>; external products: <span class="num">15% → 50%</span></td><td class="cite" style="text-align:right">'Results'</td></tr>
+      <tr class="hl"><td><strong>Retail Advisory</strong></td><td>US$<span class="num">67M/year</span> in fees earned; exhibit lead time: <span class="num">5 → 2 months</span></td><td class="cite" style="text-align:right">'Results'</td></tr>
+      <tr><td><strong>Product Dev.</strong></td><td>Simulation in <span class="num">~80%</span> of all projects; eye-tracking &amp; virtual stores for packaging &amp; shelf decisions</td><td class="cite" style="text-align:right">'Product Development'</td></tr>
+    </tbody>
+  </table>
+  <div class="cols3" style="flex:unset;gap:10px">
+    <div class="card card-b" style="padding:12px 14px"><p style="font-size:12px"><strong>Descriptive →</strong> Weekly batch reports, rearview-mirror management</p></div>
+    <div class="card card-y" style="padding:12px 14px"><p style="font-size:12px"><strong>Predictive →</strong> Spotfire what-if, Bayesian demand forecasting</p></div>
+    <div class="card card-g" style="padding:12px 14px"><p style="font-size:12px"><strong>Prescriptive →</strong> E2open automated adjustments, Control Tower routing</p></div>
+  </div>
+  <div class="spk">Salomé Barreira</div>
+</div>
+
+<!-- ══ SLIDE 7 — Q3a: CHALLENGES ══ -->
+<div class="slide bg-b">
+  <div class="shead"><div class="label">Q3a · Challenges Going Forward</div><div class="snum">07 / 10</div></div>
+  <h2 class="stitle">What <em>Challenges</em> Does P&amp;G Face?</h2>
+  <div class="cgrid">
+    <div class="citem">
+      <span class="cico">🔄</span>
+      <div class="ctitle">Change Management &amp; Data Culture</div>
+      <p>"We had to educate and train our field force over and over again to make analytics part of their daily routine" <span class="cite">(IBS, 'Challenges')</span></p>
+    </div>
+    <div class="citem">
+      <span class="cico">🏢</span>
+      <div class="ctitle">Fragmented Data Ownership</div>
+      <p>"Ownership of data is fragmented across IT, engineering, finance and procurement" — Siemens USA CEO E. Spiegel <span class="cite">(IBS, 'Challenges')</span></p>
+    </div>
+    <div class="citem">
+      <span class="cico">🔐</span>
+      <div class="ctitle">System Reliability &amp; Security</div>
+      <p>"If we have a security issue on one of our websites, that could impact the company's reputation instantaneously" — Passerini <span class="cite">(IBS, 'Challenges')</span></p>
+    </div>
+    <div class="citem">
+      <span class="cico">🛡️</span>
+      <div class="ctitle">Consumer Privacy — GDPR</div>
+      <p>Consumer profiling (Pampers.com, Consumer Pulse) triggers GDPR obligations on profiling and automated decisions with potential "intrusive effects on individuals" <span class="cite">(GDPR Art. 4.4 &amp; 22)</span></p>
+    </div>
+    <div class="citem">
+      <span class="cico">🤖</span>
+      <div class="ctitle">EU AI Act Compliance</div>
+      <p>HR analytics, marketing AI, and consumer prediction may qualify as <strong>high-risk AI</strong>, requiring strict documentation and oversight <span class="cite">(EU AI Act 2024/1689)</span></p>
+    </div>
+    <div class="citem">
+      <span class="cico">📉</span>
+      <div class="ctitle">Big Data ≠ Strategy</div>
+      <p>P&amp;G lost market share for 14 of 17 quarters despite world-class analytics. Analytics must serve the business strategy, not substitute it <span class="cite">(IBS, 'Challenges')</span></p>
+    </div>
+  </div>
+  <div class="spk">Teresa Miranda</div>
+</div>
+
+<!-- ══ SLIDE 8 — Q3b: RECOMMENDATIONS ══ -->
+<div class="slide bg-a">
+  <div class="shead"><div class="label">Q3b · Recommendations</div><div class="snum">08 / 10</div></div>
+  <h2 class="stitle">What Should P&amp;G <em>Do?</em></h2>
+  <div class="rlist">
+    <div class="ritem">
+      <div class="rnum">1</div>
+      <div>
+        <div class="rtitle">Formalise a Data Governance Framework — DAMA DMBOK2</div>
+        <p>Appoint CDO with business sponsorship. Define Data Owners &amp; Data Stewards per domain. Business Glossary, metadata catalogue, data quality policies. P&amp;G already appointed Guy Peri as CDO in 2015 — next step: institutionalise governance beyond a single role <span class="cite">(IBS, 'Big Data at P&amp;G')</span></p>
+      </div>
+    </div>
+    <div class="ritem">
+      <div class="rnum">2</div>
+      <div>
+        <div class="rtitle">Conduct a BDA Maturity Assessment — Info-Tech Model</div>
+        <p>Based on case evidence (Hadoop, CDO, analytics in all functions), P&amp;G qualifies as <strong>Innovator — Level 4</strong>: "big data treated as an asset used to innovate with new products and services." Formal assessment identifies remaining gaps and defines a roadmap</p>
+      </div>
+    </div>
+    <div class="ritem">
+      <div class="rnum">3</div>
+      <div>
+        <div class="rtitle">Embed GDPR — Privacy by Design (Art. 25, 30, 35)</div>
+        <p>Record of Processing Activities (Art. 30); DPIAs before high-risk consumer analytics (Art. 35); data minimisation — collect only what is strictly necessary; consumer rights (access, rectification, erasure) operationally supported</p>
+      </div>
+    </div>
+    <div class="ritem">
+      <div class="rnum">4</div>
+      <div>
+        <div class="rtitle">Prepare for EU AI Act — Regulation EU 2024/1689</div>
+        <p>Document all AI systems; implement transparency and human oversight for HR analytics and marketing AI; align with the risk-based framework (unacceptable / high / limited / minimal risk)</p>
+      </div>
+    </div>
+    <div class="ritem">
+      <div class="rnum">5</div>
+      <div>
+        <div class="rtitle">Balance Analytics with the Human Touch</div>
+        <p>Complement quantitative models with qualitative consumer research — especially in beauty and baby care, where emotional connection drives brand loyalty. "Big Data gives no guidance on how to ask the right questions"</p>
+      </div>
+    </div>
+  </div>
+  <div class="spk">Teresa Miranda</div>
+</div>
+
+<!-- ══ SLIDE 9 — CONCLUSION ══ -->
+<div class="slide bg-b">
+  <div class="shead"><div class="label">Conclusion</div><div class="snum">09 / 10</div></div>
+  <h2 class="stitle">Key <em>Takeaways</em></h2>
+  <div class="concl">
+    <div class="concl-card">
+      <span class="concl-icon">📊</span>
+      <div class="concl-title">Q1 — Strategy</div>
+      <p>World-class Big Data ecosystem: multi-source collection, Lambda Architecture processing, and integrated real-time tools — Business Sphere, Decision Cockpit, Consumer Pulse</p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">💰</span>
+      <div class="concl-title">Q2 — Benefits</div>
+      <p>US$2B+ cost savings · Decision time: weeks → minutes · R&amp;D efficiency +60% · External innovation 15% → 50% · Retail advisory US$67M/year</p>
+    </div>
+    <div class="concl-card">
+      <span class="concl-icon">🔭</span>
+      <div class="concl-title">Q3 — Future</div>
+      <p>Key challenges: change management, GDPR, AI Act, data governance. 5 recommendations grounded in DAMA DMBOK2, Info-Tech Maturity Model, and regulatory frameworks</p>
+    </div>
+  </div>
+  <div class="qblock">
+    <p>"Analytics can advocate trends and reduce human error — but it is the human decisions and strategies that will turn the wheel."</p>
+    <span class="qsrc">IBS Case Study, 'Challenges'</span>
+  </div>
+  <div class="div"></div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <span class="meta-pill">IBS Case Study (2017)</span>
+    <span class="meta-pill">GDPR — EU 2016/679</span>
+    <span class="meta-pill">EU AI Act — EU 2024/1689</span>
+    <span class="meta-pill">DAMA DMBOK2 (2017)</span>
+    <span class="meta-pill">Info-Tech BDA Maturity Model</span>
+  </div>
+</div>
+
+<!-- ══ SLIDE 10 — THANK YOU ══ -->
+<div class="slide bg-title">
+  <div class="big-circle">
+    <span>Q&amp;A</span>
+    <span>BDA4B</span>
+  </div>
+  <div style="margin-top:auto;margin-bottom:auto;max-width:580px">
+    <div class="label">Nova IMS · BDA4B · 2025–2026</div>
+    <h1 class="hero" style="font-size:50px">Thank You<br><span>for Listening</span></h1>
+    <p class="hero-sub">Big Data Strategy of Procter &amp; Gamble</p>
+    <div class="div" style="width:180px;margin:20px 0"></div>
+    <p style="font-size:13px;color:rgba(200,223,254,.55)">
+      <strong style="color:var(--ice)">Prof. José Carlos Teixeira</strong> · jteixeira@novaims.unl.pt<br><br>
+      Francisco Neves 20251104 &nbsp;·&nbsp; Rafael Quinteiro da Silva 20251609<br>
+      Salomé Barreira 20251020 &nbsp;·&nbsp; Teresa Miranda 20251856
+    </p>
+    <p style="font-size:13px;margin-top:18px;color:rgba(200,223,254,.45)">Questions welcome 🙌</p>
+  </div>
+</div>
+
+</div><!-- #deck -->
+
+<div id="nav">
+  <button id="bp" onclick="go(-1)" title="← Previous">←</button>
+  <span id="sc">01 / 10</span>
+  <button id="bn" onclick="go(1)" title="Next →">→</button>
+  <span id="timer" onclick="toggleTimer()" title="Click to start/pause">00:00</span>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const N=slides.length;
+let cur=0,elapsed=0,timerRunning=false,tiv=null;
+const pb=document.getElementById('pb'),sc=document.getElementById('sc'),te=document.getElementById('timer');
+
+function updateUI(){
+  pb.style.width=((cur+1)/N*100)+'%';
+  sc.textContent=String(cur+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+  document.getElementById('bp').disabled=cur===0;
+  document.getElementById('bn').disabled=cur===N-1;
+}
+
+function go(d){
+  const nxt=cur+d;
+  if(nxt<0||nxt>=N)return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('exit');
+  const prev=cur;
+  setTimeout(()=>slides[prev].classList.remove('exit'),380);
+  cur=nxt;
+  slides[cur].classList.add('active');
+  updateUI();
+  if(!timerRunning&&elapsed===0)startTimer();
+}
+
+function startTimer(){
+  timerRunning=true;
+  tiv=setInterval(()=>{
+    elapsed++;
+    te.textContent=String(Math.floor(elapsed/60)).padStart(2,'0')+':'+String(elapsed%60).padStart(2,'0');
+    te.className=elapsed>=600?elapsed>=750?'over':'warn':'';
+  },1000);
+}
+
+function toggleTimer(){
+  if(timerRunning){clearInterval(tiv);timerRunning=false;}
+  else startTimer();
+}
+
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();go(1);}
+  if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();go(-1);}
+});
+
+updateUI();
+</script>
+</body>
+</html>
